@@ -1,7 +1,9 @@
+import os
+
 class LangParser(object):
   """This is the base class for all the parser plugins"""
 
-  def __init__(self, path, content, parse=True):
+  def __init__(self, path, content=None, parse=True):
     """Initialize the language parser plugin
 
     :param path: The path of the file that is being parsed
@@ -14,6 +16,11 @@ class LangParser(object):
     self.processed = []
     self.lines = Lines(content)
     self.title = "Generic"
+    if (self.path is not None and
+        os.path.exists(self.path) and
+        content is None):
+      with open(self.path, 'r') as fp:
+        self.content = fp.read()
     if parse:
       self.parse()
 
@@ -131,21 +138,6 @@ class Section(object):
   def __repr__(self):
     return self.content
 
-  def parse_words(self):
-    for word in self.content.split():
-      self.check_word(word.strip().lower())
-
-  def check_word(self, word):
-    if word in self.parser.processed:
-      return
-    self.parser.processed.append(word)
-    if len(word) < 2:
-      return
-    if not word.isalpha():
-      return
-    if not self.parser.enchant.check(word):
-      self.parser.errors.add(word, self.line)
-
 class Sections(object):
   def __init__(self, parser):
     self.parser = parser
@@ -178,19 +170,6 @@ class Sections(object):
   def add_simple(self, content):
       item = Section(self.parser, content.strip())
       self.sections.append(item)
-
-  def check_word(self, word):
-    if not word:
-      return
-    if word in self.parser.processed:
-      return
-    if len(word) < 2:
-      return
-    if not word.isalpha():
-      return
-    if not self.parser.enchant.check(word):
-      print("Word {} is not valid".format(word))
-    self.parser.processed.append(word)
 
   def has_section(self, section):
     """Check whether a section exists

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""Spell check Development files"""
+"""Spell check Development files neither"""
 
 from __future__ import print_function
 import os, sys, argparse, textwrap

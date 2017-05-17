@@ -67,7 +67,7 @@ class Dictionary(object):
     print("Wrote the dictionary to {}".format(self.path))
 
   def add_global(self, word):
-    """Add a word to the global dictonary
+    """Add a word to the global dictionary
 
     :param word: The word to add
     """

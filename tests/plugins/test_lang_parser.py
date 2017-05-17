@@ -14,6 +14,7 @@ def test_lang_basic():
   assert not parser.content
   assert not parser.lines.lines
   assert not parser.sections.has_section(None)
+  assert parser.lines.get_line_number(0) == -1
 
   # Should get an exception trying to call parse since
   # it should be subclassed

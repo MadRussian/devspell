@@ -125,7 +125,7 @@ class Document(object):
     obj = plugin(self.path, self.content)
     for section in obj.sections.sections:
       for word in section.content.split():
-        self.check_word(word.strip().lower(), section.line)
+        self.check_word(word.strip(), section.line)
     diff = time.time() - stime
     print("Processing {} took {:.4f}s".format(self.path, diff))
     return True
@@ -153,7 +153,7 @@ class Document(object):
       # one stop lookup at the top
       if self.parser.dictionary.has_word(word):
         return
-      # Spellcheck the word
+      # Spell check the word
       if not self.parser.enchant.check(word):
         self.parser.words.words[word].ok = False
 

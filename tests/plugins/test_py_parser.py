@@ -4,52 +4,24 @@ import pytest
 import context
 
 from context import devspell
+from context import get_path
 PyParser = devspell.plugins.PyParser
 
 def test_python_basic():
   """Test the basic operation of the Python parser"""
+  parser = PyParser(None)
+  assert not parser.path
+  assert not parser.content
 
-  content = """
-  # This is a single comment
-  def test():
-    my_life = "This is my life"
+  parser = PyParser("does.not.exist")
+  assert not parser.content
 
-  class Bob:
-    def bob_life(self):
-      print "Bob's life"
-  """
-  parser = PyParser("path", content)
-  assert len(parser.lines.lines) == 9
+  path = get_path("parsers/python/basic.py")
+  parser = PyParser(path)
+  assert not parser.sections.has_section("!/usr/bin/python")
   assert parser.sections.has_section("This is a single comment")
+  assert parser.sections.has_section("Information about test")
   assert parser.sections.has_section("This is my life")
+  assert parser.sections.has_section("Comment about")
   assert parser.sections.has_section("Bob's life")
-
-def test_python_block_comment():
-  """Test a python comment block"""
-
-  content1 = '''
-  """
-  This is a multi-line
-  comment, thanks
-  """
-  """This is a failure
-  '''
-
-  content2 = """
-  '''
-  This is a multi-line
-  comment, thanks
-  '''
-  '''This is a failure
-  """
-  parser = PyParser("path", content1)
-  assert len(parser.lines.lines) == 7
-  assert parser.sections.has_section("This is a multi-line")
-  assert parser.sections.has_section("comment, thanks")
-  assert not parser.sections.has_section("This is a failure")
-
-  parser = PyParser("path", content2)
-  assert len(parser.lines.lines) == 7
-  assert parser.sections.has_section("This is a multi-line")
-  assert parser.sections.has_section("comment, thanks")
-  assert not parser.sections.has_section("This is a failure")
+  assert parser.sections.has_section("Bob's fun life")

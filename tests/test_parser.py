@@ -47,10 +47,10 @@ def test_parser_file():
   """Parse a file"""
   parser = devspell.parser.Parser(get_path("test_file1.txt"))
   assert parser.parse()
-  assert parser.words.has_invalid("wong")
-  assert parser.words.has_invalid("wvord")
-  assert not parser.words.has_valid("wvord")
-  assert parser.words.has_valid("sample")
+  assert parser.words.has_invalid("Wvord")
+  assert parser.words.has_valid("Wong")
+  assert not parser.words.has_valid("Wvord")
+  assert parser.words.has_valid("Sample")
   assert parser.words.has_valid("file")
 
   parser.only = ["py"]

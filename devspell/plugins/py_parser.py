@@ -1,31 +1,42 @@
 from lang_parser import LangParser
+from lang_parser import Section
+import tokenize
+import token
+import os
+
+PARSE_TYPES = [
+  tokenize.STRING,
+  tokenize.COMMENT,
+]
 
 class PyParser(LangParser):
 
   def parse(self):
-    self.parse_block_comments()
-    self.parse_string_literals()
-    self.parse_shell_comments()
+    """This uses tokenize to parse the content"""
+    if not self.path:
+      return
+    if not os.path.exists(self.path):
+      return
+    with open(self.path, 'r') as fp:
+      token_gen = tokenize.generate_tokens(fp.readline)
+      for ttype, tok, start, end, line in token_gen:
+        if ttype not in PARSE_TYPES:
+          continue
+        srow, scol = start
+        erow, ecol = end
 
-  def _parse_block_comments_pattern(self, pattern):
-    """Parse a block comment based on a pattern
+        if ttype == tokenize.COMMENT:
+          # Ignore shebang
+          if tok.find("#!/") == 0:
+            continue
 
-    :param pattern: What to search for
-    """
-    cur = 0
-    end = len(self.content)
-    while cur < end:
-      sloc = self.content.find(pattern, cur)
-      if sloc < 0:
-        break
-      eloc = self.content.find(pattern, sloc + len(pattern))
-      if eloc < 0:
-        break
-      blob = self.content[sloc+len(pattern):eloc]
-      cur = eloc + len(pattern)
-      self.sections.add(blob, sloc, eloc + len(pattern))
+        # Strip based on the first char
+        tok = tok.strip(tok[0])
 
-  def parse_block_comments(self):
-    """Parse a block comment"""
-    self._parse_block_comments_pattern('"""')
-    self._parse_block_comments_pattern("'''")
+        lines = tok.split('\n')
+        line_ix = 0
+        for data in lines:
+          item = Section(self, data.strip())
+          item.line = srow + line_ix
+          self.sections.sections.append(item)
+          line_ix += 1

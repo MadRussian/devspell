@@ -38,5 +38,7 @@ def test_doc_setup():
   # Check a word with a line number
   doc.check_word('testword', 300)
   doc.check_word('anotherword', None)
+  doc.check_word('Wvord', 100)
+  doc.check_word('wong', 100)
   parser.words.get('testword').show_verbose()
   parser.words.get('anotherword').show_verbose()
